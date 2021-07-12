@@ -17,7 +17,7 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) throw err;
-  runSearch();
+  optionPrompt();
 });
 
 const employeeOptions = [
@@ -120,5 +120,14 @@ const addRole = () => {
           viewRoles();
         });
       });
+  };
+
+  const viewRoles = () => {
+    const query =
+      'SELECT * FROM role';
+    connection.query(query, (err, res) => {
+      res.forEach(({ role }) => console.log(role));
+      optionPrompt();
+    });
   };
 
