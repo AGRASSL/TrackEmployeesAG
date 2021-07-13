@@ -1,5 +1,6 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+var connection = require('./connection')
 
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -30,11 +31,20 @@ const employeeOptions = [
     "exit"
 ];
 
+const updateOptions = [
+    "First Name",
+    "Last Name",
+    "Role",
+    "exit"
+]
+
+optionPrompt();
+
 const optionPrompt = () => {
   inquirer
     .prompt({
       name: 'action',
-      type: 'rawlist',
+      type: 'list',
       message: 'What would you like to do?',
       choices: [
         'Add Department',
@@ -101,8 +111,9 @@ const addDepartment = () => {
 const viewDepartments = () => {
   const query =
     'SELECT * FROM department';
-  connection.query(query, (err, res) => {
-    res.forEach(({ department }) => console.log(department));
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+    console.log(res);
     optionPrompt();
   });
 };
@@ -126,8 +137,36 @@ const addRole = () => {
     const query =
       'SELECT * FROM role';
     connection.query(query, (err, res) => {
-      res.forEach(({ role }) => console.log(role));
+      if (err) throw err;
+      console.log(res)
       optionPrompt();
     });
   };
+
+  const addEmployee = () => {
+    inquirer
+      .prompt({
+        name: 'employee',
+        type: 'input',
+        message: 'What employee would you like to add ?',
+      })
+      .then((answer) => {
+        const query = 'INSERT INTO employee (name) Values ( ? )';
+        connection.query(query, { employee: answer.employee }, (err, res) => {
+          viewEmployees();
+        });
+      });
+  };
+
+  const viewEmployees = () => {
+    const query =
+      'SELECT id, first_name, last_name, title, role_id, manager_id FROM employee';
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+      console.log(res);
+      optionPrompt();
+    });
+  };
+
+
 
