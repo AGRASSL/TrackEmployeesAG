@@ -2,24 +2,7 @@ const mysql = require('mysql');
 const inquirer = require('inquirer');
 var connection = require('./connection')
 
-const connection = mysql.createConnection({
-  host: 'localhost',
 
-  // Your port; if not 3306
-  port: 3306,
-
-  // Your username
-  user: 'root',
-
-  // Be sure to update with your own MySQL password!
-  password: 'G28H6Bxp?',
-  database: 'track_employeesDB',
-});
-
-connection.connect((err) => {
-  if (err) throw err;
-  optionPrompt();
-});
 
 const employeeOptions = [
     "Rachel Green",
@@ -40,7 +23,7 @@ const updateOptions = [
 
 optionPrompt();
 
-const optionPrompt = () => {
+function optionPrompt() {
   inquirer
     .prompt({
       name: 'action',
@@ -101,10 +84,12 @@ const addDepartment = () => {
       message: 'What department would you like to add ?',
     })
     .then((answer) => {
-      const query = 'INSERT INTO department (name) Values ( ? )';
-      connection.query(query, { department: answer.department }, (err, res) => {
-        viewDepartments();
-      });
+      connection.query ( 'INSERT INTO department SET ?',
+      {
+          id: answer.id,
+          name: answer.name
+      }
+      );
     });
 };
 
@@ -113,7 +98,7 @@ const viewDepartments = () => {
     'SELECT * FROM department';
   connection.query(query, function (err, res) {
     if (err) throw err;
-    console.log(res);
+    console.table(res);
     optionPrompt();
   });
 };
@@ -138,7 +123,7 @@ const addRole = () => {
       'SELECT * FROM role';
     connection.query(query, (err, res) => {
       if (err) throw err;
-      console.log(res)
+      console.table(res)
       optionPrompt();
     });
   };
@@ -160,10 +145,10 @@ const addRole = () => {
 
   const viewEmployees = () => {
     const query =
-      'SELECT id, first_name, last_name, title, role_id, manager_id FROM employee';
+      'SELECT id, first_name, last_name, role_id, manager_id FROM employee';
     connection.query(query, (err, res) => {
         if (err) throw err;
-      console.log(res);
+      console.table(res);
       optionPrompt();
     });
   };
