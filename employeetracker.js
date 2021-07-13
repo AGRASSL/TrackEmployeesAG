@@ -77,81 +77,130 @@ function optionPrompt() {
 };
 
 const addDepartment = () => {
-  inquirer
-    .prompt({
-      name: 'department',
-      type: 'input',
-      message: 'What department would you like to add ?',
-    })
-    .then((answer) => {
-      connection.query ( 'INSERT INTO department SET ?',
-      {
-          id: answer.id,
-          name: answer.name
-      }
-      );
-    });
-};
+      inquirer
+      .prompt ( 
+        {
+          type: "input", 
+          message: "What is the new Department's Name?",
+          name: "name",
+        }
+    )
+
+    .then (function(answer){
+        const query = connection.query(
+          "INSERT INTO department SET ?", 
+         answer,
+          function(err, answer) {
+            if (err) throw err;
+            console.log( "Department added!");
+    
+            viewDepartments(); 
+          }
+        );    
+      });
+    };
 
 const viewDepartments = () => {
   const query =
     'SELECT * FROM department';
-  connection.query(query, function (err, res) {
+  connection.query(query, function (err, answer) {
     if (err) throw err;
-    console.table(res);
+    console.table(answer);
     optionPrompt();
   });
 };
 
-const addRole = () => {
-    inquirer
-      .prompt({
-        name: 'role',
-        type: 'input',
-        message: 'What role would you like to add ?',
-      })
-      .then((answer) => {
-        const query = 'INSERT INTO role (name) Values ( ? )';
-        connection.query(query, { role: answer.role }, (err, res) => {
-          viewRoles();
-        });
+function addRole() {
+    console.log("Inserting a new Role");
+    inquirer 
+    .prompt ([ 
+        {
+          type: "input", 
+          message: "What is the Title of the role?",
+          name: "title",
+        },
+        {
+          type: "input", 
+          message: "What is the salary of the role?",
+          name: "salary"
+        },
+        {
+          type: "input",
+          message: "What is the role's department id?",
+          name: "department_id", 
+        }
+      ])
+      .then (function(answer){
+        const query = connection.query(
+          "INSERT INTO role SET ?", 
+         answer,
+          function(err, answer) {
+            if (err) throw err;
+            console.log( "Role added!");
+    
+            viewRoles(); 
+          }
+        );    
       });
-  };
+    };
 
   const viewRoles = () => {
     const query =
       'SELECT * FROM role';
-    connection.query(query, (err, res) => {
+    connection.query(query, (err, answer) => {
       if (err) throw err;
-      console.table(res)
+      console.table(answer)
       optionPrompt();
     });
   };
 
-  const addEmployee = () => {
-    inquirer
-      .prompt({
-        name: 'employee',
-        type: 'input',
-        message: 'What employee would you like to add ?',
-      })
-      .then((answer) => {
-        const query = 'INSERT INTO employee (name) Values ( ? )';
-        connection.query(query, { employee: answer.employee }, (err, res) => {
-          viewEmployees();
-        });
+
+function addEmployee() {
+    console.log("Inserting a new employee");
+    inquirer 
+      .prompt ([ 
+        {
+          type: "input", 
+          message: "What is the employee's first name?",
+          name: "first_name",
+        },
+        {
+          type: "input", 
+          message: "what is the employee's last name?",
+          name: "last_name"
+        },
+        {
+          type: "input",
+          message: "What is the employee's role ID number?",
+          name: "role_id", 
+        },
+        {
+          type: "input", 
+          message: "What is the managers ID number?",
+          name: "manager_id"
+        }
+      ])
+      .then (function(answer){
+        const query = connection.query(
+          "INSERT INTO employee SET ?", 
+         answer,
+          function(err, answer) {
+            if (err) throw err;
+            console.log( "Employee added!");
+    
+            viewEmployees(); 
+          }
+        );    
       });
-  };
+    };
 
   const viewEmployees = () => {
     const query =
-      'SELECT id, first_name, last_name, role_id, manager_id FROM employee';
-    connection.query(query, (err, res) => {
+      'SELECT first_name, last_name, role_id, manager_id FROM employee';
+    connection.query(query, (err, answer) => {
         if (err) throw err;
-      console.table(res);
+      console.table(answer);
       optionPrompt();
     });
   };
-
-
 
